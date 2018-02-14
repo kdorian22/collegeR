@@ -32,4 +32,9 @@ pitchSequence <- function(info, IDs, batter, pitcher, atBat, date){
 
   legend('bottomright', legend=c('FB', 'CB', 'SL', 'CH', '2S'), fill=c('red', 'blue', 'purple', 'green', 'orange'))
 }
-pitchSequence(Case, Cid, 'capetillo', 'howard', 2, "2017-04-14")
+
+
+plotPitch <- function(teamSheet, teamIDSheet, ID){
+  pitchSequence(teamSheet, teamIDSheet, Hid$batter[which(Hid$atBatID==ID)], Hid$pitcher[which(Hid$atBatID==ID)], 
+                Hid$`at bat number`[which(Hid$atBatID==ID)], Hid$date[which(Hid$atBatID==ID)])
+}
