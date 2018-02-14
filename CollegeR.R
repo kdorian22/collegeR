@@ -13,7 +13,6 @@ loadCodes <- function(){
   teamCodes$School <- as.character(teamCodes$School)
   return(teamCodes)
 }
-teamCodes <- loadCodes()
 
 
 findName <- function(schools){
@@ -28,8 +27,6 @@ findName <- function(schools){
   ##findName returns a list of the possible names
   sapply(schools, function(x){teamCodes[grepl(x, teamCodes$School, ignore.case=T), 2]})
 }
-findName('Wesl')
-findName(c('Washington', 'Emory', 'Chicago', 'CWRU'))
 
 
 nameCodes <- function(Teams, teamCodes){
@@ -43,8 +40,6 @@ nameCodes <- function(Teams, teamCodes){
   ##nameCodes returns a list of the codes
   sapply(Teams, function(x){teamCodes$Code[which(teamCodes$School == x)]})
 }
-nameCodes(c('Washington-St. Louis', 'Emory', 'Chicago', 'CWRU'), teamCodes)
-nameCodes('Washington-St. Louis', teamCodes)
 
 
 loadRoster <- function(Code){
@@ -63,11 +58,6 @@ loadRoster <- function(Code){
   Roster <- as.data.frame(apply(as.data.frame(Roster), 2, function(x){as.character(x)}))
   colnames(Roster) <- c('Number', 'LastName', 'FirstName', 'Position', 'Year')
   return((Roster))}
-RosterL <- loadRoster(nameCodes('Louisville', teamCodes))
-RosterW <- loadRoster(755)
-RosterE <- loadRoster(217)
-RosterC <- loadRoster(nameCodes('Columbia', teamCodes))
-RosterCW <- loadRoster(nameCodes('CWRU', teamCodes))
 
 PlayScrape <- function(URL, team){
   ##PlayScrape is a function used to scrape play by play data off the stats.ncaa webstie
@@ -98,10 +88,7 @@ PlayScrape <- function(URL, team){
   colnames(All) <- 'Description'
   return(All)
 }
-Plays1 <- PlayScrape(WashU, "Washington-St. Louis")
-Plays2 <- PlayScrape(Louisville, "Louisville")
-Plays3 <- PlayScrape(Columbia, "Columbia")
-Plays4 <- PlayScrape(Emory, 'Emory')
+
 
 
 loadPoints <- function(file){
@@ -116,12 +103,8 @@ loadPoints <- function(file){
 Points <- read.csv(file)
 Points[,c(1:4)] <- apply(Points[,c(1:4)], 2, function(x){as.character(x)})
 return(Points)}
-Points <- loadPoints("~/Documents/Baseball/NCAA-Package/Graphical Point.csv")
 
-FirstName <- 'Ben'
-LastName <- 'Browdy'
-Roster <- RosterW
-Plays <- Plays1
+
 makeSpray<-function(Plays, Points, Roster, FirstName, LastName, Hand, Title=TRUE, groundx=1, 
                      groundy=1, airx=1, airy=1, Point = TRUE){
   ##makeSpray is a function used to make a visual spray chart using non-specfic play-by-play data
@@ -202,9 +185,7 @@ makeSpray<-function(Plays, Points, Roster, FirstName, LastName, Hand, Title=TRUE
   sprayInfo <- Player
   return(sprayInfo)
 }
-sprayInfo <- makeSpray(Plays1, Points, RosterW, 'John', "Brinkman", 'R', T, 20, 10, 20, 10, T)
-sprayInfo <- makeSpray(Plays1, Points, RosterW, 'Auggie', "Mense", 'L', T, 20, 10, 15, 10, T)
-sprayInfo <- makeSpray(Plays2, Points, RosterL, 'Brendan', "McKay", 'R', T, 20, 10, 100, 30, T)
+
 
 
 groundRates <- function(Plays, Points, FirstName, LastName){
@@ -256,7 +237,6 @@ groundRates <- function(Plays, Points, FirstName, LastName){
   infield <- c(groundLeft, groundMiddle, groundRight, groundLeft, throughLeft, throughRight, hits, groundoutLeft, groundoutRight)
   return(infield)
 }
-groundRates(Plays2, Points, 'Brendan', 'McKay')
 
 
 makeShades <- function(Plays, Points, Roster, FirstName, LastName, Hand, Title=T){
@@ -364,9 +344,7 @@ makeShades <- function(Plays, Points, Roster, FirstName, LastName, Hand, Title=T
   colnames(results) <- 'Percentage'
   return(results)
 }
-Tendencies <- makeShades(Plays1, Points, RosterW, 'John', "Brinkman", 'L', F)
-makeShades(Plays2, Points, RosterL, 'Brendan', "McKay", 'L', F)
-makeShades(Plays4, Points, RosterE, 'Nick', "Chambers", 'R', T)
+
 
 powerNumbers <- function(Plays, Points, Roster, FirstName, LastName, Hand, Title=TRUE, Legend=TRUE){
   ##powerNumbers is a function used to visualize a player's power directional tendencies using non-specfic play-by-play data
@@ -438,11 +416,7 @@ powerNumbers <- function(Plays, Points, Roster, FirstName, LastName, Hand, Title
   mtext(paste0('#', Roster$Number[which(Roster$LastName == LastName)], ' ',
                Roster$Position[which(Roster$LastName == LastName)]))}
   }
-powerNumbers(Plays1, Points, RosterW,'Ben', "Browdy", 'R', F, TRUE)
-title(main="Sample Player 2 (R)")
-mtext("#01 INF")
-powerNumbers(Plays4, Points, RosterE, 'Nick', "Chambers", 'R', TRUE, TRUE)
-powerNumbers(Plays2, Points, RosterL, 'Brendan', "McKay", 'L', TRUE, TRUE)
+
 
 makeTitle <- function(Roster, FirstName, LastName){
   ##makeTitle is a function used to create a text box with a player's name, number, and position
@@ -456,7 +430,6 @@ makeTitle <- function(Roster, FirstName, LastName){
            Roster$Position[which(Roster$LastName == LastName)]),cex=1.5)
   text(80, 80, 'Notes:',cex=1.5)
   }
-makeTitle(RosterC,'Randall','Kanemaru')
 
 matchUp <- function(FirstName, LastName, Plays){
   ##matchUp is a funtion used to extract the at bats against a certain relief pitcher
@@ -488,7 +461,6 @@ matchUp <- function(FirstName, LastName, Plays){
   colnames(MatchUp) <- 'Description'
   return(MatchUp)
   }
-MatchUp <- matchUp('Devin', 'Mayfield', Plays1)
 
 ####################  Stats Scraping  #####################
 d3SOS <- function(){
@@ -516,7 +488,6 @@ d3SOS <- function(){
   SOS <- SOS[order(SOS$SOS, decreasing = T),]
   return(SOS)
   }
-SOS <- d3SOS()
 
 loadSOS <- function(Division = 3){
   ##loadSOS scrapes the strength of schedule data from stats.ncaa website 
@@ -532,7 +503,6 @@ loadSOS <- function(Division = 3){
   SOS <- SOS[,c(2,15)]
   colnames(SOS) <- c('Team', 'SOS')
   return(SOS)}
-SOS1 <- loadSOS(2)
 
 Offense <- function(codes, SOS){
   ##Offense is a function used to scrape basic offensive data from stats.ncaa.org 
@@ -553,7 +523,7 @@ Offense <- function(codes, SOS){
       Sites <- c(Sites, paste0(base, i, '/stats/12560'))}
     return(Sites)
   }
-  getSites(codes)
+
   myTeam <- cbind(as.data.frame(readHTMLTable(getSites(codes)[1])[3]), 
                   rep(teamCodes$School[which(teamCodes$Code == codes[1])], nrow(as.data.frame(readHTMLTable(getSites(codes)[1])[3]))))
   colnames(myTeam) <- (1:ncol(myTeam))
@@ -620,7 +590,7 @@ Offense <- function(codes, SOS){
   myLeague <- myLeague[,c(27, 1:13, 29, 14:26, 28, 30:36)]
 }
 UAA <- Offense(nameCodes(c('Washington-St. Louis', 'Emory', 'CWRU', 'NYU', 'Greenville', 'Brandeis'), teamCodes), 3)
-write.csv(UAA,  "/Users/kennydorian/Desktop/UAA.csv")
+
 quickStats <- function(code){
   ##quickStats is a function used to scrape basic offensive data from stats.ncaa.org 
   
@@ -650,9 +620,7 @@ quickStats <- function(code){
                     + 1.62*myTeam$`3B`+2.1*myTeam$HR)/(myTeam$AB+myTeam$BB+myTeam$HBP),3)
   return(myTeam)
 }
-CaseWestern <- quickStats(nameCodes('CWRU', teamCodes))
-write.csv(CaseWestern, '/Users/kennydorian/Desktop/CaseWesternStats.csv')
-Wustl <- quickStats(755)
+
 
 multiStats <- function(codes, Division){
   ##multiStats is a function used to scrape basic offensive data from stats.ncaa.org 
@@ -699,9 +667,6 @@ multiStats <- function(codes, Division){
   myLeague$wOBA <- round((0.688*myLeague$BB + 0.72*myLeague$HBP + 0.89*(myLeague$`H`-myLeague$`2B`-myLeague$`3B`-myLeague$`HR`)+ 1.27*myLeague$`2B`
                     + 1.62*myLeague$`3B`+2.1*myLeague$HR)/(myLeague$AB+myLeague$BB+myLeague$HBP),3)
   
-return(myLeague)}
-Big <- multiStats(nameCodes(c('CWRU'), teamCodes),3)
-Nescac <- Offense(nameCodes(c('Tufts', 'Amherst', 'Williams')),3)
 
 quickPitch <- function(code){
   require(XML)
@@ -730,7 +695,6 @@ quickPitch <- function(code){
   rownames(myTeam) <- c(1:nrow(myTeam))
   myTeam <- myTeam[c(37,1:36)]
 }
-WASH <- quickPitch(755)
 
 Pitching <- function(codes){
   ##Pitching is a function used to scrape basic pitching data from stats.ncaa.org
@@ -788,5 +752,4 @@ for(i in 1:nrow(Plays1)){
     Plays1$inning[i] <- 'change'
   }
 }
-i <- 1
 
