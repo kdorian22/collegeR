@@ -3,8 +3,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
-from plotnine import *
-from plotnine.data import *
+import xlrd
 import re
 import os, sys
 from dfply import *
@@ -42,14 +41,14 @@ def hello():
 def viz():
      if request.method == 'POST':
          f = request.files['file']
-         f.save(secure_filename('pitch.csv'))
+         f.save(secure_filename('pitch.xlsx'))
          return(render_template("viz.html", name = f.filename))
      else:
          return(render_template("viz.html"))
 
 @app.route('/velo')
 def velo():
-    pitches = pd.read_csv('pitch.csv')
+    pitches = pd.read_csv('pitch.xlsx')
     plot = ggplot(pitches, aes('Pitch_Number', 'Velo', colour='Pitch'))+\
       geom_line()+\
       geom_point(size = 1)+\
@@ -59,7 +58,7 @@ def velo():
 
 @app.route('/zone')
 def zone():
-    pitches =  pd.read_csv('pitch.csv')
+    pitches =  pd.read_csv('pitch.xlsx')
     pitch = pitches >> select(X.Hor,X.Vert) >> group_by(X.Hor, X.Vert) >> summarize(tot = n(X.Hor)) >> spread(X.Hor, X.tot)
     pitch = pitch.set_index('Vert')
     zoneVis = sns.heatmap(pitch)
@@ -299,6 +298,13 @@ def top25():
 def sprays():
 	subprocess.check_call(['Rscript', '/home/kdorian/creative/app/sprays.R', session['code'], session['year']])
 	return(redirect(url_for('static', filename='sprays.pdf')))
+
+@app.route('/sequence')
+def sequence():
+	sequencePath =  '/home/kdorian/creative/app/pitch.xlsx'
+	subprocess.check_call(['Rscript', '/home/kdorian/creative/app/sequence.R', sequencePath])
+	return(redirect(url_for('static', filename='sequence.pdf')))
+
 
 @app.route('/plays', methods = ['POST', 'GET'])
 def getPlays():
